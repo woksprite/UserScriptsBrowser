@@ -84,13 +84,21 @@ struct ScriptManagerView: View {
     var body: some View {
         NavigationStack {
             List {
-                if store.scripts.isEmpty {
-                    ContentUnavailableView(
-                        "No Scripts",
-                        systemImage: "scroll",
-                        description: Text("Tap + in the browser to import a .js or .user.js file.")
-                    )
-                }
+               if store.scripts.isEmpty {
+    VStack(spacing: 12) {
+        Image(systemName: "scroll")
+            .font(.largeTitle)
+
+        Text("No Scripts")
+            .font(.headline)
+
+        Text("Tap + in the browser to import a .js or .user.js file.")
+            .font(.caption)
+            .foregroundStyle(.secondary)
+    }
+    .frame(maxWidth: .infinity)
+    .padding()
+}
 
                 ForEach($store.scripts) { $script in
                     VStack(alignment: .leading, spacing: 5) {
