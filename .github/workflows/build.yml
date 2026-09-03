@@ -1,1 +1,39 @@
+name: Build iOS App
 
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          xcodebuild \
+            -project UserScriptBrowser.xcodeproj \
+            -scheme UserScriptBrowser \
+            -configuration Release \
+            -sdk iphoneos \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Find app
+        run: |
+          find ~/Library/Developer/Xcode/DerivedData -name "UserScriptBrowser.app"
+
+      - name: Make IPA
+        run: |
+          APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "UserScriptBrowser.app" | head -1)
+          mkdir Payload
+          cp -R "$APP_PATH" Payload/
+          zip -r UserScriptBrowser-unsigned.ipa Payload
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: UserScriptBrowser-IPA
+          path: UserScriptBrowser-unsigned.ipa
